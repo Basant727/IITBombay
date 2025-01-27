@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IIT Bombay Timetable</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwallpaperaccess.com%2Ffull%2F5367033.jpg&f=1&nofb=1&ipt=b918279c98e7213f234d69e97a649903694d204e4ccd4c4cc3f2b999e53322c1&ipo=images');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: white;
+    }
+    h1 {
+      background-color: rgba(0, 0, 0, 0.7);
+      text-align: center;
+      padding: 15px;
+      margin: 0;
+    }
+    .container {
+      margin: 20px auto;
+      max-width: 600px;
+      padding: 20px;
+      background-color: rgba(0, 0, 0, 0.8);
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    }
+    select, input, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: none;
+      font-size: 16px;
+    }
+    select, input {
+      background-color: rgba(255, 255, 255, 0.8);
+      color: black;
+    }
+    button {
+      background-color: #4682b4;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #5a9bd3;
+    }
+    label {
+      font-size: 16px;
+      margin-bottom: 5px;
+      display: block;
+    }
+    .hidden {
+      display: none;
+    }
+    .schedule-display {
+      margin-top: 20px;
+    }
+    .schedule-display h3 {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>IIT Bombay Timetable</h1>
+
+  <div class="container">
+    <h2>Set or View Timetable</h2>
+    <label for="day">Select Day:</label>
+    <select id="day" onchange="viewSchedule()">
+      <option value="">Select a day</option>
+      <option value="monday">Monday</option>
+      <option value="tuesday">Tuesday</option>
+      <option value="wednesday">Wednesday</option>
+      <option value="thursday">Thursday</option>
+      <option value="friday">Friday</option>
+      <option value="saturday">Saturday</option>
+      <option value="sunday">Sunday</option>
+    </select>
+
+    <div id="scheduleForm">
+      <label>8:30 AM - 9:30 AM:</label>
+      <input type="text" data-time="8:30 AM - 9:30 AM" placeholder="Enter class name">
+
+      <label>9:30 AM - 10:30 AM:</label>
+      <input type="text" data-time="9:30 AM - 10:30 AM" placeholder="Enter class name">
+
+      <label>10:30 AM - 11:30 AM:</label>
+      <input type="text" data-time="10:30 AM - 11:30 AM" placeholder="Enter class name">
+
+      <label>11:30 AM - 12:30 PM:</label>
+      <input type="text" data-time="11:30 AM - 12:30 PM" placeholder="Enter class name">
+
+      <label>12:30 PM - 2:00 PM:</label>
+      <input type="text" data-time="12:30 PM - 2:00 PM" placeholder="Enter class name">
+
+      <label>2:00 PM - 5:00 PM:</label>
+      <input type="text" data-time="2:00 PM - 5:00 PM" placeholder="Enter class name">
+      
+      <button onclick="saveSchedule()">Save Timetable</button>
+    </div>
+
+    <div class="schedule-display hidden" id="scheduleDisplay">
+      <h3 id="dayDisplay"></h3>
+      <div id="scheduleContent"></div>
+      <button onclick="editSchedule()">Edit Timetable</button>
+    </div>
+  </div>
+
+  <script>
+    function saveSchedule() {
+      const day = document.getElementById('day').value;
+      if (!day) {
+        alert('Please select a day to save the timetable.');
+        return;
+      }
+
+      const inputs = document.querySelectorAll('#scheduleForm input');
+      const schedule = {};
+
+      inputs.forEach(input => {
+        const time = input.getAttribute('data-time');
+        const className = input.value.trim();
+        if (className) {
+          schedule[time] = className;
+        }
+      });
+
+      localStorage.setItem(day, JSON.stringify(schedule));
+      alert('Timetable saved successfully!');
+      viewSchedule();
+    }
+
+    function viewSchedule() {
+      const day = document.getElementById('day').value;
+      if (!day) {
+        alert('Please select a day to view the timetable.');
+        return;
+      }
+
+      const schedule = JSON.parse(localStorage.getItem(day)) || {};
+      const scheduleContent = document.getElementById('scheduleContent');
+      const dayDisplay = document.getElementById('dayDisplay');
+
+      dayDisplay.textContent = `Timetable for ${day.charAt(0).toUpperCase() + day.slice(1)}`;
+      scheduleContent.innerHTML = '';
+
+      if (Object.keys(schedule).length === 0) {
+        scheduleContent.innerHTML = '<p>No timetable found for this day.</p>';
+      } else {
+        for (const time in schedule) {
+          scheduleContent.innerHTML += `<p>${time}: ${schedule[time]}</p>`;
+        }
+      }
+
+      document.getElementById('scheduleForm').classList.add('hidden');
+      document.getElementById('scheduleDisplay').classList.remove('hidden');
+    }
+
+    function editSchedule() {
+      document.getElementById('scheduleForm').classList.remove('hidden');
+      document.getElementById('scheduleDisplay').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
